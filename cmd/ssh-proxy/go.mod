@@ -4,7 +4,6 @@ go 1.12
 
 require (
 	code.cloudfoundry.org/bbs v0.0.0-20190724191824-01b96ad15a77
-	code.cloudfoundry.org/cfhttp/v2 v2.0.0 // indirect
 	code.cloudfoundry.org/clock v0.0.0-20180518195852-02e53af36e6c
 	code.cloudfoundry.org/consuladapter v0.0.0-20190222031846-a0ec466a22b6
 	code.cloudfoundry.org/debugserver v0.0.0-20180612203758-a3ba348dfede
@@ -18,8 +17,8 @@ require (
 	code.cloudfoundry.org/locket v0.0.0-20190524173003-285105ed8d9a
 	code.cloudfoundry.org/rep v0.0.0-20190729174702-6b00ae35f40b // indirect
 	code.cloudfoundry.org/tlsconfig v0.0.0-20190710180242-462f72de1106
+	github.com/SUSE/eirini-ssh/authenticators v0.0.0-00010101000000-000000000000
 	github.com/SUSE/eirini-ssh/proxy v0.0.0
-	github.com/bmizerany/pat v0.0.0-20170815010413-6226ea591a40 // indirect
 	github.com/docker/docker v1.13.1 // indirect
 	github.com/gogo/protobuf v1.2.1
 	github.com/golang/protobuf v1.3.2 // indirect
@@ -34,9 +33,10 @@ require (
 	github.com/pborman/getopt v0.0.0-20190409184431-ee0cd42419d3 // indirect
 	github.com/pkg/sftp v0.0.0-20160116174101-8e47c759f51e
 	github.com/tedsuo/ifrit v0.0.0-20180802180643-bea94bb476cc
-	github.com/tedsuo/rata v1.0.0 // indirect
-	github.com/vito/go-sse v1.0.0 // indirect
 	golang.org/x/crypto v0.0.0-20190701094942-4def268fd1a4
 )
 
-replace github.com/SUSE/eirini-ssh/proxy v0.0.0 => github.com/jimmykarily/eirini-ssh/proxy v0.0.0
+replace (
+	github.com/SUSE/eirini-ssh/authenticators => ../../authenticators
+	github.com/SUSE/eirini-ssh/proxy v0.0.0 => github.com/jimmykarily/eirini-ssh/proxy v0.0.0
+)

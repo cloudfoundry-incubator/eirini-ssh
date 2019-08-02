@@ -21,7 +21,6 @@ import (
 
 	"code.cloudfoundry.org/bbs/models"
 	"code.cloudfoundry.org/diego-logging-client/testhelpers"
-	"code.cloudfoundry.org/diego-ssh/authenticators"
 	sshdtestrunner "code.cloudfoundry.org/diego-ssh/cmd/sshd/testrunner"
 	"code.cloudfoundry.org/diego-ssh/helpers"
 	"code.cloudfoundry.org/diego-ssh/routes"
@@ -29,6 +28,7 @@ import (
 	"code.cloudfoundry.org/go-loggregator/rpc/loggregator_v2"
 	"code.cloudfoundry.org/lager/lagerflags"
 	"code.cloudfoundry.org/tlsconfig"
+	"github.com/SUSE/eirini-ssh/authenticators"
 	"github.com/SUSE/eirini-ssh/cmd/ssh-proxy/config"
 	"github.com/SUSE/eirini-ssh/cmd/ssh-proxy/testrunner"
 	"github.com/gogo/protobuf/proto"
