@@ -18,13 +18,19 @@ require (
 	code.cloudfoundry.org/tlsconfig v0.0.0-20190710180242-462f72de1106
 	github.com/SUSE/eirini-ssh/proxy v0.0.0
 	github.com/bmizerany/pat v0.0.0-20170815010413-6226ea591a40 // indirect
-	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
+	github.com/docker/docker v1.13.1 // indirect
 	github.com/gogo/protobuf v1.2.1
 	github.com/golang/protobuf v1.3.2 // indirect
+	github.com/google/shlex v0.0.0-20181106134648-c34317bd91bf // indirect
+	github.com/hashicorp/consul v1.5.3 // indirect
 	github.com/hashicorp/consul/api v1.1.0
+	github.com/kr/fs v0.1.0 // indirect
+	github.com/kr/pty v1.1.8 // indirect
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d // indirect
 	github.com/onsi/ginkgo v1.8.0
 	github.com/onsi/gomega v1.5.0
+	github.com/pborman/getopt v0.0.0-20190409184431-ee0cd42419d3 // indirect
+	github.com/pkg/sftp v0.0.0-20160116174101-8e47c759f51e
 	github.com/tedsuo/ifrit v0.0.0-20180802180643-bea94bb476cc
 	github.com/tedsuo/rata v1.0.0 // indirect
 	github.com/vito/go-sse v1.0.0 // indirect

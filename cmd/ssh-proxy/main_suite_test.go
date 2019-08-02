@@ -11,9 +11,9 @@ import (
 	"time"
 
 	"code.cloudfoundry.org/consuladapter/consulrunner"
+	"code.cloudfoundry.org/diego-ssh/cmd/sshd/testrunner"
+	"code.cloudfoundry.org/diego-ssh/keys"
 	"code.cloudfoundry.org/inigo/helpers/portauthority"
-	"github.com/SUSE/eirini-ssh/cmd/sshd/testrunner"
-	"github.com/SUSE/eirini-ssh/keys"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/gexec"
@@ -67,7 +67,7 @@ var _ = SynchronizedBeforeSuite(func() []byte {
 	sshProxy, err := gexec.Build("github.com/SUSE/eirini-ssh/cmd/ssh-proxy", "-race")
 	Expect(err).NotTo(HaveOccurred())
 
-	sshd, err := gexec.Build("github.com/SUSE/eirini-ssh/cmd/sshd", "-race")
+	sshd, err := gexec.Build("code.cloudfoundry.org/diego-ssh/cmd/sshd", "-race")
 	Expect(err).NotTo(HaveOccurred())
 
 	hostKey, err := keys.RSAKeyPairFactory.NewKeyPair(1024)
