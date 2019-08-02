@@ -32,8 +32,6 @@ type SSHProxyConfig struct {
 	SkipCertVerify                  bool                  `json:"skip_cert_verify"`
 	EnableCFAuth                    bool                  `json:"enable_cf_auth"`
 	EnableConsulServiceRegistration bool                  `json:"enable_consul_service_registration,omitempty"`
-	EnableDiegoAuth                 bool                  `json:"enable_diego_auth"`
-	DiegoCredentials                string                `json:"diego_credentials"`
 	BBSCACert                       string                `json:"bbs_ca_cert"`
 	BBSClientCert                   string                `json:"bbs_client_cert"`
 	BBSClientKey                    string                `json:"bbs_client_key"`

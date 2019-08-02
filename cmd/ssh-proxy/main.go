@@ -123,15 +123,10 @@ func configureProxy(logger lager.Logger, sshProxyConfig config.SSHProxyConfig) (
 		logger.Fatal("failed-to-parse-bbs-address", err)
 	}
 
-	bbsClient := initializeBBSClient(logger, sshProxyConfig)
-	permissionsBuilder := authenticators.NewPermissionsBuilder(bbsClient, sshProxyConfig.ConnectToInstanceAddress)
+	//bbsClient := initializeBBSClient(logger, sshProxyConfig)
+	permissionsBuilder := authenticators.NewPermissionsBuilder(nil, sshProxyConfig.ConnectToInstanceAddress)
 
 	authens := []authenticators.PasswordAuthenticator{}
-
-	if sshProxyConfig.EnableDiegoAuth {
-		diegoAuthenticator := authenticators.NewDiegoProxyAuthenticator(logger, []byte(sshProxyConfig.DiegoCredentials), permissionsBuilder)
-		authens = append(authens, diegoAuthenticator)
-	}
 
 	if sshProxyConfig.EnableCFAuth {
 		if sshProxyConfig.CCAPIURL == "" {
