@@ -1,1 +1,1 @@
-package authenticators // import "code.cloudfoundry.org/diego-ssh/authenticators"
+package authenticators // import "github.com/SUSE/eirini-ssh/authenticators"

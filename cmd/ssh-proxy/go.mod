@@ -11,10 +11,12 @@ require (
 	code.cloudfoundry.org/diego-logging-client v0.0.0-20190626151511-6278d4119f52
 	code.cloudfoundry.org/diego-ssh v0.0.0-20190726165408-4e330a244ce1
 	code.cloudfoundry.org/durationjson v0.0.0-20170223024715-718cecacb217
+	code.cloudfoundry.org/executor v0.0.0-20190801203923-2503b1a6fcc2 // indirect
 	code.cloudfoundry.org/go-loggregator v7.4.0+incompatible
 	code.cloudfoundry.org/inigo v0.0.0-20190725181809-38aa015ae590
 	code.cloudfoundry.org/lager v2.0.0+incompatible
 	code.cloudfoundry.org/locket v0.0.0-20190524173003-285105ed8d9a
+	code.cloudfoundry.org/rep v0.0.0-20190729174702-6b00ae35f40b // indirect
 	code.cloudfoundry.org/tlsconfig v0.0.0-20190710180242-462f72de1106
 	github.com/SUSE/eirini-ssh/proxy v0.0.0
 	github.com/bmizerany/pat v0.0.0-20170815010413-6226ea591a40 // indirect
