@@ -36,3 +36,18 @@ More information:
 
 - https://github.com/cloudfoundry/diego-ssh#cloud-foundry-via-cloud-controller-and-uaa
 - https://github.com/cloudfoundry/uaa/blob/master/docs/UAA-APIs.rst#client-obtains-token-post-oauthtoken
+
+
+## Notes
+
+To create a correct config.json file you will need the ssh-proxy user's secret (password). You can find that with something like
+
+```
+kubectl get secrets -n scf secrets-2.17.1-1 -o yaml | less
+```
+
+(look for uaa-clients-diego-ssh-proxy-secret)
+
+decode the value with `echo "the_value_here" | base64 -d`. This is the value you need for the config.json file.
+
+
