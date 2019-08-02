@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: eirini-ssh-proxy
+spec:
+  containers:
+  - name: eirini-ssh-proxy
+    image: jimmykarily/eirini-ssh-proxy:latest
+    command: ['/bin/eirini-ssh-proxy']
