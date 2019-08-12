@@ -1,0 +1,104 @@
+---
+apiVersion: v1
+kind: List
+items:
+  - apiVersion: rbac.authorization.k8s.io/v1
+    kind: ClusterRole
+    metadata:
+      creationTimestamp: null
+      name: "eirini-logging-extension"
+    rules:
+    - apiGroups:
+      - '*'
+      resources:
+      - '*'
+      verbs:
+      - '*'
+  - kind: ClusterRoleBinding
+    apiVersion: rbac.authorization.k8s.io/v1
+    metadata:
+      name: "eirini-logging-extension"
+      namespace: "default"
+    roleRef:
+      kind: ClusterRole
+      name: "eirini-logging-extension"
+      apiGroup: rbac.authorization.k8s.io
+    subjects:
+    - kind: ServiceAccount
+      name: "eirini-logging-extension"
+      namespace: "default"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: eirini-logging-extension-service
+spec:
+  selector:
+    app: eirini-logging-extension
+  ports:
+  - protocol: TCP
+    port: 3000
+    targetPort: 3000
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: "eirini-logging-extension"
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: eirini-logging-extension
+  labels:
+    app: eirini-logging-extension
+spec:
+  serviceAccountName: "eirini-logging-extension"
+  containers:
+   - image: splatform/eirini-logging
+     args: ["extension"]
+     name: eirini-logging-extension
+     imagePullPolicy: Always
+     env:
+     - name: EIRINI_EXTENSION_HOST
+       value: $(EIRINI_LOGGING_EXTENSION_SERVICE_SERVICE_HOST)
+     - name: EIRINI_EXTENSION_NAMESPACE
+       value: eirini
+     - name: EIRINI_EXTENSION_PORT
+       value: $(EIRINI_LOGGING_EXTENSION_SERVICE_SERVICE_PORT)
+     - name: DOPPLER_SECRET
+       value: "secrets-2.16.4.1-1"
+     - name: LOGGREGATOR_ENDPOINT
+       value: "doppler-doppler.scf.svc.cluster.local:8082"
+  restartPolicy: Always
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: eirini-logging-extension
+subjects:
+- kind: ServiceAccount
+  name: eirini-logging-extension
+roleRef:
+  kind: Role
+  name: eirini-logging-extension
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  creationTimestamp: null
+  name: eirini-logging-extension
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  - services
+  - endpoints
+  - persistentvolumeclaims
+  - events
+  - configmaps
+  - secrets
+  - namespaces
+  verbs:
+    - '*'

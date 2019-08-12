@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: eirini-fake-app
+  labels:
+    source_type: APP
+spec:
+  serviceAccountName: default
+  containers:
+   - image: ubuntu
+     command:
+     - /bin/sh
+     - -c
+     - >
+       i=0;
+       while true;
+       do
+       i=$((i+1));
+       echo "$i: $(date)";
+       sleep 1;
+       done
+     name: eirini-fake-app
+  restartPolicy: Always
