@@ -1,0 +1,52 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: fake-app-ssh-key
+type: Opaque
+stringData:
+  cf: |
+    ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDDZK9ydgntNr4K5N7FFnHhsFcbIcYK9TaezG+aiRxuPsOdcYf203nJEiaxtDPvVI4yw4Oa35zHVO7ACYgd4lu8OEYEz/+YjBEoXv5twnRn2oAI59iErZ3z46EZK2c4dCgJA4oLIn7UxSHZz0iFo+ZPU716i/t9j0Z2dW0EtW5TX2BGcmmvZbkCrq2Bs5qNkV/dle3IDy9Ld/HwutiyDTJ5V9JU44aqVTBmxKd9Nq7W2bOfhRfoCXAct5m/B5C2I/HSsk/OoJn+3YL4qpiJ3hvQcmJngKsLpsx/4sLiC53F4fHlkRWeo5zgoCqsbygvyP0TdZxxH9oQp1Jq5BxIqGtD opensuse@dkarakaslis-jumpbox
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: fakeapp
+spec:
+  # https://kubernetes.io/docs/tasks/configure-pod-container/share-process-namespace/
+  shareProcessNamespace: true
+  containers:
+  - name: app
+    image: opensuse/leap
+    command: ["/bin/bash"]
+    args:
+      - "-c"
+      - "while true; do date; sleep 1; done"
+  - name: sshd
+    image: panubo/sshd
+    securityContext:
+      capabilities:
+        add:
+        - SYS_PTRACE
+    stdin: true
+    tty: true
+    command: ["/bin/bash"]
+    args:
+      - "-c"
+      - "mkdir -p /etc/authorized_keys && cp -L /ssh-keys/* /etc/authorized_keys/ && /entry.sh /usr/sbin/sshd -D -e -f /etc/ssh/sshd_config"
+    volumeMounts:
+    - name: fake-app-ssh-key
+      # readOnly: false
+      mountPath: "/ssh-keys"
+    env:
+    - name: SSH_USERS
+      value: "cf:1000:1000"
+  volumes:
+  - name: fake-app-ssh-key
+    secret:
+      defaultMode: 256
+      secretName: fake-app-ssh-key
+      items:
+      - key: cf
+        path: cf
+        mode: 256
