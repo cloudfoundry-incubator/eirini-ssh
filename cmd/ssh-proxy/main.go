@@ -1,35 +1,34 @@
 package main
 
 import (
-	"errors"
-	"flag"
-	"net"
-	"net/url"
-	"os"
-	"strings"
-	"time"
-
-	"code.cloudfoundry.org/bbs"
 	"code.cloudfoundry.org/clock"
 	"code.cloudfoundry.org/consuladapter"
 	"code.cloudfoundry.org/debugserver"
 	loggingclient "code.cloudfoundry.org/diego-logging-client"
+	"code.cloudfoundry.org/diego-ssh/authenticators"
+	"code.cloudfoundry.org/diego-ssh/cmd/ssh-proxy/config"
 	"code.cloudfoundry.org/diego-ssh/healthcheck"
 	"code.cloudfoundry.org/diego-ssh/helpers"
+	"code.cloudfoundry.org/diego-ssh/proxy"
 	"code.cloudfoundry.org/diego-ssh/server"
 	"code.cloudfoundry.org/go-loggregator/runtimeemitter"
 	"code.cloudfoundry.org/lager"
 	"code.cloudfoundry.org/lager/lagerflags"
 	"code.cloudfoundry.org/locket"
-	"github.com/SUSE/eirini-ssh/authenticators"
-	"github.com/SUSE/eirini-ssh/cmd/ssh-proxy/config"
-	"github.com/SUSE/eirini-ssh/proxy"
+	"errors"
+	"flag"
+	kb "github.com/SUSE/eirini-ssh/authenticators"
 	"github.com/hashicorp/consul/api"
 	"github.com/tedsuo/ifrit"
 	"github.com/tedsuo/ifrit/grouper"
 	"github.com/tedsuo/ifrit/http_server"
 	"github.com/tedsuo/ifrit/sigmon"
 	"golang.org/x/crypto/ssh"
+	"net"
+	"net/url"
+	"os"
+	"strings"
+	"time"
 )
 
 var configPath = flag.String(
@@ -113,18 +112,9 @@ func main() {
 }
 
 func configureProxy(logger lager.Logger, sshProxyConfig config.SSHProxyConfig) (*ssh.ServerConfig, error) {
-	if sshProxyConfig.BBSAddress == "" {
-		err := errors.New("bbsAddress is required")
-		logger.Fatal("bbs-address-required", err)
-	}
 
-	url, err := url.Parse(sshProxyConfig.BBSAddress)
-	if err != nil {
-		logger.Fatal("failed-to-parse-bbs-address", err)
-	}
-
-	//bbsClient := initializeBBSClient(logger, sshProxyConfig)
-	permissionsBuilder := authenticators.NewPermissionsBuilder(nil, sshProxyConfig.ConnectToInstanceAddress)
+	var err error
+	permissionsBuilder := kb.NewKubeAuth()
 
 	authens := []authenticators.PasswordAuthenticator{}
 
@@ -228,23 +218,6 @@ func parsePrivateKey(logger lager.Logger, encodedKey string) (ssh.Signer, error)
 		return nil, err
 	}
 	return key, nil
-}
-
-func initializeBBSClient(logger lager.Logger, sshProxyConfig config.SSHProxyConfig) bbs.InternalClient {
-	bbsClient, err := bbs.NewClientWithConfig(bbs.ClientConfig{
-		URL:                    sshProxyConfig.BBSAddress,
-		IsTLS:                  true,
-		CAFile:                 sshProxyConfig.BBSCACert,
-		CertFile:               sshProxyConfig.BBSClientCert,
-		KeyFile:                sshProxyConfig.BBSClientKey,
-		ClientSessionCacheSize: sshProxyConfig.BBSClientSessionCacheSize,
-		MaxIdleConnsPerHost:    sshProxyConfig.BBSMaxIdleConnsPerHost,
-		RequestTimeout:         time.Duration(sshProxyConfig.CommunicationTimeout),
-	})
-	if err != nil {
-		logger.Fatal("Failed to configure secure BBS client", err)
-	}
-	return bbsClient
 }
 
 func initializeRegistrationRunner(logger lager.Logger, consulClient consuladapter.Client, listenAddress string, clock clock.Clock) ifrit.Runner {
