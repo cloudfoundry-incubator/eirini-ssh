@@ -1,16 +1,21 @@
 package authenticators
 
 import (
+	"context"
 	"encoding/base64"
-	"errors"
+	"encoding/json"
+	"fmt"
 	"strconv"
-	v1 "k8s.io/api/core/v1"
-	"code.cloudfoundry.org/diego-ssh/proxy"
+
 	cfauth "code.cloudfoundry.org/diego-ssh/authenticators"
+	"code.cloudfoundry.org/diego-ssh/proxy"
 	"code.cloudfoundry.org/lager"
+	"github.com/pkg/errors"
 	"golang.org/x/crypto/ssh"
+	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime/schema"
+	machinerytypes "k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -28,39 +33,37 @@ func NewKubeAuth(kubeconfig string) cfauth.PermissionsBuilder {
 }
 
 func (kb *kubeBuilder) Build(logger lager.Logger, processGuid string, index int, metadata ssh.ConnMetadata) (*ssh.Permissions, error) {
-	conn, err := kb.GetSecretKeys(processGuid + "-" + strconv.Itoa(int) + "-ssh-key-meta")
+	conn, err := kb.GetSecretKeys(processGuid + "-" + strconv.Itoa(index) + "-ssh-key-meta")
 	if err != nil {
 		return nil, errors.Wrap(err, "Could not retreive SSH key for "+processGuid)
 	}
 
-	/ Using a typed object.
+	// Using a typed object.
 	pod := &v1.Pod{}
 	_ = kb.Kubeclient.Get(context.TODO(), client.ObjectKey{
-		Namespace: "eirini",  // FIXME: Hardcoded 
+		Namespace: "eirini", // FIXME: Hardcoded
 		Name:      conn.PodName,
-	}, pod)	
-	
-	logMessage := fmt.Sprintf("Successful remote access by %s", metadata.RemoteAddr().String())
-	
-	address:=pod.Status.HostIP  // FIXME: inject containerports if possible ?
-	port:=2222 // FIXME: Hardcoded 
+	}, pod)
 
-	var targetConfig *proxy.TargetConfig
-	targetConfig = &proxy.TargetConfig{
+	logMessage := fmt.Sprintf("Successful remote access by %s", metadata.RemoteAddr().String())
+
+	address := pod.Status.HostIP // FIXME: inject containerports if possible ?
+	port := 2222                 // FIXME: Hardcoded
+
+	targetConfig := &proxy.TargetConfig{
 		Address:             fmt.Sprintf("%s:%d", address, port),
-		TLSAddress:          tlsAddress,
-		ServerCertDomainSAN: actual.ActualLRPInstanceKey.InstanceGuid,
-		HostFingerprint:     sshRoute.HostFingerprint,
-		User:                sshRoute.User,
-		Password:            sshRoute.Password,
-		PrivateKey:          sshRoute.PrivateKey,
+		TLSAddress:          "",
+		ServerCertDomainSAN: processGuid,
+		HostFingerprint:     conn.Fingerprint,
+		User:                "",
+		Password:            "",
+		PrivateKey:          conn.PrivateKey,
 	}
 
 	targetConfigJson, err := json.Marshal(targetConfig)
 	if err != nil {
 		return nil, err
 	}
-
 
 	logMessageJson, err := json.Marshal(proxy.LogMessage{
 		Message: logMessage,
@@ -89,7 +92,11 @@ func (kb *kubeBuilder) GetSecretKeys(name string) (ConnectionOptions, error) {
 		Kind:    "Secret",
 		Version: "v1",
 	})
-	kb.Kubeclient.Get(ctx, secretNamespacedName, secret)
+	secretNamespacedName := machinerytypes.NamespacedName{
+		Name:      name,
+		Namespace: "eirini", //FIXME: hardcoded
+	}
+	kb.Kubeclient.Get(context.TODO(), secretNamespacedName, secret)
 	if secret.GetName() == "" {
 		return ConnectionOptions{}, errors.New("No secret found")
 	}
@@ -113,9 +120,9 @@ func (kb *kubeBuilder) GetSecretKeys(name string) (ConnectionOptions, error) {
 	}
 
 	return ConnectionOptions{
-		PublicKey:   pubKey,
-		PrivateKey:  privKey,
-		Fingerprint: fingerprint,
-		PodName:     podName,
+		PublicKey:   string(pubKey),
+		PrivateKey:  string(privKey),
+		Fingerprint: string(fingerprint),
+		PodName:     string(podName),
 	}, nil
 }
