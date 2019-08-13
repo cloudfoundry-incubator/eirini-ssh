@@ -1,5 +1,0 @@
-#!/bin/sh
-set -ev
-
-bin/test-unit
-bin/test-integration
