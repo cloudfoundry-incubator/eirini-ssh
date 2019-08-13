@@ -3,6 +3,7 @@ all: test-unit build image
 .PHONY: build
 build:
 	bin/build-ssh-proxy
+	bin/build-extension
 
 export NAMESPACE ?= default
 
