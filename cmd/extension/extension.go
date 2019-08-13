@@ -82,7 +82,7 @@ func (ext *Extension) Handle(ctx context.Context, eiriniManager eirinix.Manager,
 	if err != nil {
 		return admission.ErrorResponse(http.StatusBadRequest, errors.Wrap(err, "Failed to generate SSH key for the application"))
 	}
-	secretName := guid + "-" + index + "-ssh-key"
+	secretName := guid + "-" + index + "-ssh-key-meta"
 	fmt.Println("Creating", secretName)
 	newSecret := &v1.Secret{
 		ObjectMeta: metav1.ObjectMeta{
@@ -93,6 +93,7 @@ func (ext *Extension) Handle(ctx context.Context, eiriniManager eirinix.Manager,
 			"public_key":  string(key.PublicKey),
 			"private_key": string(key.PrivateKey),
 			"fingerprint": key.Fingerprint,
+			"pod_name":    pod.Name,
 		},
 	}
 	_, err = kubeClient.CoreV1().Secrets(podCopy.Namespace).Create(newSecret)
