@@ -1,15 +1,18 @@
 package main
 
 import (
-	inmemorygenerator "code.cloudfoundry.org/cf-operator/pkg/credsgen/in_memory_generator"
 	"context"
 	"fmt"
+	"net/http"
+	"strconv"
+	"strings"
+
+	inmemorygenerator "code.cloudfoundry.org/cf-operator/pkg/credsgen/in_memory_generator"
 	eirinix "github.com/SUSE/eirinix"
 	"github.com/pkg/errors"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
-	"net/http"
 	"sigs.k8s.io/controller-runtime/pkg/webhook/admission"
 	"sigs.k8s.io/controller-runtime/pkg/webhook/admission/types"
 )
@@ -27,6 +30,19 @@ func getVolume(name, path string) (v1.Volume, v1.VolumeMount) {
 	}
 
 	return vol, mount
+}
+
+func extractInstanceID(s string) string {
+	var res string
+	el := strings.Split(s, "-")
+	if len(el) != 0 {
+		res = el[len(el)-1]
+		if _, err := strconv.Atoi(res); err == nil {
+			return res
+		}
+	}
+
+	return "0"
 }
 
 func (ext *Extension) Handle(ctx context.Context, eiriniManager eirinix.Manager, pod *v1.Pod, req types.Request) types.Response {
@@ -47,7 +63,12 @@ func (ext *Extension) Handle(ctx context.Context, eiriniManager eirinix.Manager,
 	if err != nil {
 		return admission.ErrorResponse(http.StatusBadRequest, errors.Wrap(err, "Failed to create a kube client"))
 	}
+	guid, ok := pod.GetLabels()["guid"]
+	if !ok {
+		return admission.ErrorResponse(http.StatusBadRequest, errors.New("Couldn't get Eirini APP UID"))
+	}
 
+	index := extractInstanceID(pod.Name)
 	// TODO:
 	// - Create or append to the existing secret a new SSH key for this app
 	// - Create a volume and a mount the secrete we created (and only that) as
@@ -61,7 +82,7 @@ func (ext *Extension) Handle(ctx context.Context, eiriniManager eirinix.Manager,
 	if err != nil {
 		return admission.ErrorResponse(http.StatusBadRequest, errors.Wrap(err, "Failed to generate SSH key for the application"))
 	}
-	secretName := podCopy.Name + "ssh-key"
+	secretName := guid + "-" + index + "-ssh-key"
 	fmt.Println("Creating", secretName)
 	newSecret := &v1.Secret{
 		ObjectMeta: metav1.ObjectMeta{
