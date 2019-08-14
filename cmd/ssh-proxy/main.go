@@ -17,7 +17,7 @@ import (
 	"code.cloudfoundry.org/locket"
 	"errors"
 	"flag"
-	kb "github.com/SUSE/eirini-ssh/authenticators"
+	//	kb "github.com/SUSE/eirini-ssh/authenticators"
 	"github.com/hashicorp/consul/api"
 	"github.com/tedsuo/ifrit"
 	"github.com/tedsuo/ifrit/grouper"
@@ -114,7 +114,7 @@ func main() {
 func configureProxy(logger lager.Logger, sshProxyConfig config.SSHProxyConfig) (*ssh.ServerConfig, error) {
 
 	var err error
-	permissionsBuilder := kb.NewKubeAuth()
+	permissionsBuilder := NewKubeAuth(os.Getenv("KUBECONFIG"))
 
 	authens := []authenticators.PasswordAuthenticator{}
 
