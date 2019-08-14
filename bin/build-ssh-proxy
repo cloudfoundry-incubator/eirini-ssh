@@ -7,6 +7,5 @@ GIT_ROOT=${GIT_ROOT:-$(git rev-parse --show-toplevel)}
 
 BASEDIR="$(cd "$(dirname "$0")/.." && pwd)"
 set -v
-
-pushd $BASEDIR/cmd/ssh-proxy/
+pushd cmd/ssh-proxy
 CGO_ENABLED=0 go build -o "${BASEDIR}/binaries/ssh-proxy" -ldflags="-X github.com/SUSE/eirini-ssh/version.Version=${ARTIFACT_VERSION}"
