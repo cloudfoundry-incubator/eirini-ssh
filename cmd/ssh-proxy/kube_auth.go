@@ -121,7 +121,7 @@ func (kb *kubeBuilder) GetSecretKeys(name string) (ConnectionOptions, error) {
 	}
 	kb.Kubeclient.Get(context.TODO(), secretNamespacedName, secret)
 	if secret.GetName() == "" {
-		return ConnectionOptions{}, errors.New("No secret found")
+		return ConnectionOptions{}, errors.New("No secret found for " + name)
 	}
 
 	data := secret.Object["data"].(map[string]interface{})

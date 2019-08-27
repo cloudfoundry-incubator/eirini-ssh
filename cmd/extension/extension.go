@@ -64,6 +64,7 @@ func (ext *Extension) Handle(ctx context.Context, eiriniManager eirinix.Manager,
 		return admission.ErrorResponse(http.StatusBadRequest, errors.Wrap(err, "Failed to create a kube client"))
 	}
 	guid, ok := pod.GetLabels()["guid"]
+	version, ok := pod.GetLabels()["version"]
 	if !ok {
 		return admission.ErrorResponse(http.StatusBadRequest, errors.New("Couldn't get Eirini APP UID"))
 	}
@@ -82,7 +83,7 @@ func (ext *Extension) Handle(ctx context.Context, eiriniManager eirinix.Manager,
 	if err != nil {
 		return admission.ErrorResponse(http.StatusBadRequest, errors.Wrap(err, "Failed to generate SSH key for the application"))
 	}
-	secretName := guid + "-" + index + "-ssh-key-meta"
+	secretName := guid + "-" + version + "-" + index + "-ssh-key-meta"
 	fmt.Println("Creating", secretName)
 	newSecret := &v1.Secret{
 		ObjectMeta: metav1.ObjectMeta{
