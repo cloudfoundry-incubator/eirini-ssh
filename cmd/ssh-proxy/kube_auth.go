@@ -74,13 +74,11 @@ func (kb *kubeBuilder) Build(logger lager.Logger, processGuid string, index int,
 	port := 2222                 // FIXME: Hardcoded
 
 	targetConfig := &proxy.TargetConfig{
-		Address:             fmt.Sprintf("%s:%d", address, port),
-		TLSAddress:          "",
-		ServerCertDomainSAN: processGuid,
-		HostFingerprint:     "",
-		User:                "",
-		Password:            "",
-		PrivateKey:          conn.PrivateKey,
+		Address: fmt.Sprintf("%s:%d", address, port),
+		//	TLSAddress:          "",
+		//	ServerCertDomainSAN: processGuid,
+		HostFingerprint: conn.Fingerprint,
+		PrivateKey:      conn.PrivateKey,
 	}
 
 	targetConfigJson, err := json.Marshal(targetConfig)
