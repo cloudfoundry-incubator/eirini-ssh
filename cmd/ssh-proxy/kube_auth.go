@@ -70,8 +70,8 @@ func (kb *kubeBuilder) Build(logger lager.Logger, processGuid string, index int,
 
 	logMessage := fmt.Sprintf("Successful remote access by %s", metadata.RemoteAddr().String())
 
-	address := pod.Status.HostIP // FIXME: inject containerports if possible ?
-	port := 2222                 // FIXME: Hardcoded
+	address := pod.Status.PodIP // FIXME: inject containerports if possible ?
+	port := 2222                // FIXME: Hardcoded
 
 	targetConfig := &proxy.TargetConfig{
 		Address: fmt.Sprintf("%s:%d", address, port),
