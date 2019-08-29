@@ -1,0 +1,70 @@
+resources:
+- name: git.diego-ssh
+  type: git
+  source:
+    uri: git@github.com:cloudfoundry/diego-ssh.git
+    private_key: {{github-private-key}}
+    branch: master
+- name: eirinifs
+  type: git
+  source:
+    uri: git@github.com:os-fun/eirinifs.git
+    private_key: {{github-private-key}}
+    branch: wip
+jobs:
+  - name: build
+    plan:
+    - get: eirinifs
+    - get: git.diego-ssh
+    - task: sshd
+      config:
+        platform: linux
+        image_resource:
+          type: registry-image
+          source:
+            repository: golang
+            tag: 1.12
+        inputs:
+          - name: git.diego-ssh
+        outputs:
+          - name: diego-ssh
+        run:
+          path: bash
+          args:
+          - -exc
+          - |
+            mkdir -p $GOPATH/src/code.cloudfoundry.org/
+            ln -s $PWD/git.diego-ssh $GOPATH/src/code.cloudfoundry.org/diego-ssh
+            pushd $GOPATH/src/code.cloudfoundry.org/diego-ssh/cmd/sshd
+
+            # Fix the incompatibility of the sftp library by checking out a compatible commit (no dependency management in diego-ssh ?!)
+            go get -d
+            pushd $GOPATH/src/github.com/pkg/sftp
+            git checkout 8e47c75
+            popd
+
+            go build
+            popd
+            mv $GOPATH/src/code.cloudfoundry.org/diego-ssh/cmd/sshd/sshd diego-ssh/
+    - task: eirinifs
+      privileged: true
+      config:
+        platform: linux
+        image_resource:
+          type: registry-image
+          source:
+            repository: eirini/fsbuilder
+        inputs:
+          - name: diego-ssh
+          - name: eirinifs
+        outputs:
+          - name: output
+        run:
+          path: bash
+          args:
+          - -exc
+          - |
+            mv diego-ssh/sshd eirinifs/image/
+            eirinifs/ci/build-eirinifs/task.sh
+            # https://github.com/os-fun/eirinifs/blob/wip/ci/build-eirinifs/task.sh#L4
+            cp go/src/github.com/cloudfoundry-incubator/eirinifs/image/eirinifs.tar output/
