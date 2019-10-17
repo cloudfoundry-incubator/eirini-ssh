@@ -3,7 +3,7 @@ package main
 import (
 	"code.cloudfoundry.org/diego-ssh/keys"
 	"context"
-	"fmt"
+	. "github.com/SUSE/eirini-loggregator-bridge/logger"
 	eirinix "github.com/SUSE/eirinix"
 
 	"github.com/pkg/errors"
@@ -17,6 +17,18 @@ import (
 )
 
 type Extension struct{ Namespace string }
+
+func generateSecretNameForPod(pod *v1.Pod) (string, error) {
+	guid, ok := pod.GetLabels()["guid"]
+	version, ok := pod.GetLabels()["version"]
+	if !ok {
+		return "", errors.New("Couldn't get Eirini APP UID")
+	}
+
+	index := extractInstanceID(pod.Name)
+
+	return guid + "-" + version + "-" + index + "-ssh-key-meta", nil
+}
 
 func getVolume(name, path string) (v1.Volume, v1.VolumeMount) {
 	mount := v1.VolumeMount{
@@ -62,23 +74,13 @@ func (ext *Extension) Handle(ctx context.Context, eiriniManager eirinix.Manager,
 	if err != nil {
 		return admission.Errored(http.StatusBadRequest, errors.Wrap(err, "Failed to create a kube client"))
 	}
-	guid, ok := pod.GetLabels()["guid"]
-	version, ok := pod.GetLabels()["version"]
-	if !ok {
-		return admission.Errored(http.StatusBadRequest, errors.New("Couldn't get Eirini APP UID"))
+
+	// NOTE: This solution is not HA! Multiple instances will try to create the same secret with unpredictable results.
+	secretName, err := generateSecretNameForPod(pod)
+	if err != nil {
+		return admission.Errored(http.StatusBadRequest, err)
 	}
-
-	index := extractInstanceID(pod.Name)
-	// TODO:
-	// - Create or append to the existing secret a new SSH key for this app
-	// - Create a volume and a mount the secrete we created (and only that) as
-	//   an environment variable inside the application pod
-	// - Cleanup any non-existing application keys from from the secret.
-	//   (NOTE: This is not HA! A better approach is to have a Watcher watching for pod deletions on the eirini namespace and remove the
-	//   relevant key when a pod is deleted)
-
-	secretName := guid + "-" + version + "-" + index + "-ssh-key-meta"
-	fmt.Println("Generating secret", secretName)
+	LogInfo("Generating secret", secretName)
 	key, err := keys.RSAKeyPairFactory.NewKeyPair(2048)
 	if err != nil {
 		return admission.Errored(http.StatusBadRequest, errors.Wrap(err, "Failed to generate SSH key for the application"))

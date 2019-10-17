@@ -43,7 +43,31 @@ func startExtension() {
 		})
 
 	x.AddExtension(&Extension{Namespace: ns})
-	fmt.Println(x.Start())
+	x.AddWatcher(&CleanupWatcher{})
+	var v chan error
+	go func() {
+		fmt.Println("Starting watcher")
+		err := x.Watch()
+		if err != nil {
+			v <- err
+			fmt.Println(err.Error())
+			return
+		}
+	}()
+	go func() {
+		fmt.Println("Starting extension")
+		err := x.Start()
+		if err != nil {
+			v <- err
+			fmt.Println(err.Error())
+			return
+		}
+	}()
+
+	for err := range v {
+		fmt.Println(err.Error())
+		os.Exit(1)
+	}
 }
 
 func main() {
