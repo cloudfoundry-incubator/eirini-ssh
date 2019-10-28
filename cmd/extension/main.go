@@ -28,6 +28,8 @@ func startExtension() {
 		}
 		port = int32(po)
 	}
+	serviceName := os.Getenv("OPERATOR_SERVICE_NAME")
+	webhookNamespace := os.Getenv("OPERATOR_WEBHOOK_NAMESPACE")
 
 	fmt.Println("Listening on ", host, port)
 
@@ -40,6 +42,8 @@ func startExtension() {
 			KubeConfig:          os.Getenv("KUBECONFIG"),
 			FilterEiriniApps:    &filterEiriniApps,
 			OperatorFingerprint: "eirini-ssh",
+			ServiceName:         serviceName,
+			WebhookNamespace:    webhookNamespace,
 		})
 
 	x.AddExtension(&Extension{Namespace: ns})
