@@ -1,6 +1,9 @@
 package main
 
 import (
+	"errors"
+	"flag"
+
 	"code.cloudfoundry.org/clock"
 	"code.cloudfoundry.org/consuladapter"
 	"code.cloudfoundry.org/debugserver"
@@ -15,20 +18,20 @@ import (
 	"code.cloudfoundry.org/lager"
 	"code.cloudfoundry.org/lager/lagerflags"
 	"code.cloudfoundry.org/locket"
-	"errors"
-	"flag"
+
 	//	kb "github.com/SUSE/eirini-ssh/authenticators"
+	"net"
+	"net/url"
+	"os"
+	"strings"
+	"time"
+
 	"github.com/hashicorp/consul/api"
 	"github.com/tedsuo/ifrit"
 	"github.com/tedsuo/ifrit/grouper"
 	"github.com/tedsuo/ifrit/http_server"
 	"github.com/tedsuo/ifrit/sigmon"
 	"golang.org/x/crypto/ssh"
-	"net"
-	"net/url"
-	"os"
-	"strings"
-	"time"
 )
 
 var configPath = flag.String(
@@ -60,7 +63,6 @@ func main() {
 		logger.Error("configure-failed", err)
 		os.Exit(1)
 	}
-
 	tlsConfig, err := sshProxyConfig.BackendsTLSConfig()
 	if err != nil {
 		logger.Error("failed-to-get-tls-config", err)

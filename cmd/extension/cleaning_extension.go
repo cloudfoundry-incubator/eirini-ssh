@@ -19,10 +19,6 @@ type CleanupWatcher struct {
 func (pw *CleanupWatcher) Handle(manager eirinix.Manager, e watch.Event) {
 	LogDebug("Received event: ", fmt.Sprintf("%+v", e))
 	if e.Object == nil {
-		// Closed because of error
-		// TODO: Handle errors ( maybe kill the whole application )
-		// because it is going to run in goroutines, and we can't
-		// just return gracefully and panicking the whole
 		return
 	}
 
@@ -50,13 +46,12 @@ func (pw *CleanupWatcher) Handle(manager eirinix.Manager, e watch.Event) {
 			LogError(err.Error())
 		}
 
-		// TODO: Should we provide delete options?
 		// https://godoc.org/k8s.io/apimachinery/pkg/apis/meta/v1#DeleteOptions
 		err = kubeClient.Secrets(pod.Namespace).Delete(secretName, nil)
 		if err != nil {
 			LogError(err.Error())
 		}
-
+		LogInfo("Secret '" + secretName + "' removed from namespace " + pod.Namespace)
 	} else {
 		LogDebug("Ignoring event of type: ", e.Type)
 	}
