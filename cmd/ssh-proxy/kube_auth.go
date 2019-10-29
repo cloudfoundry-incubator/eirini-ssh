@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"os"
 	"strconv"
 
 	cfauth "code.cloudfoundry.org/diego-ssh/authenticators"
@@ -24,6 +25,8 @@ import (
 type kubeBuilder struct {
 	Kubeconfig string
 	Kubeclient client.Client
+	Namespace  string
+	SSHDPort   int
 }
 
 type ConnectionOptions struct {
@@ -31,7 +34,13 @@ type ConnectionOptions struct {
 }
 
 func NewKubeAuth(kubeconfig string) cfauth.PermissionsBuilder {
-	return &kubeBuilder{Kubeconfig: kubeconfig}
+	namespace := os.Getenv("SSH_PROXY_KUBERNETES_NAMESPACE")
+	if len(namespace) == 0 {
+		namespace = "eirini"
+	}
+	return &kubeBuilder{Kubeconfig: kubeconfig, Namespace: namespace,
+		SSHDPort: 2222, // FIXME: Hardcoded also in the eirinifs wrapper to run sshd
+	}
 }
 
 func (kb *kubeBuilder) Build(logger lager.Logger, processGuid string, index int, metadata ssh.ConnMetadata) (*ssh.Permissions, error) {
@@ -64,14 +73,14 @@ func (kb *kubeBuilder) Build(logger lager.Logger, processGuid string, index int,
 	// Using a typed object.
 	pod := &v1.Pod{}
 	_ = kb.Kubeclient.Get(context.TODO(), client.ObjectKey{
-		Namespace: "eirini", // FIXME: Hardcoded
+		Namespace: kb.Namespace,
 		Name:      conn.PodName,
 	}, pod)
 
 	logMessage := fmt.Sprintf("Successful remote access by %s", metadata.RemoteAddr().String())
 
 	address := pod.Status.PodIP // FIXME: inject containerports if possible ?
-	port := 2222                // FIXME: Hardcoded
+	port := kb.SSHDPort
 
 	targetConfig := &proxy.TargetConfig{
 		Address: fmt.Sprintf("%s:%d", address, port),
@@ -115,7 +124,7 @@ func (kb *kubeBuilder) GetSecretKeys(name string) (ConnectionOptions, error) {
 	})
 	secretNamespacedName := machinerytypes.NamespacedName{
 		Name:      name,
-		Namespace: "eirini", //FIXME: hardcoded
+		Namespace: kb.Namespace,
 	}
 	kb.Kubeclient.Get(context.TODO(), secretNamespacedName, secret)
 	if secret.GetName() == "" {
