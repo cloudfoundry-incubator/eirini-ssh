@@ -38,8 +38,21 @@ func NewKubeAuth(kubeconfig string) cfauth.PermissionsBuilder {
 	if len(namespace) == 0 {
 		namespace = "eirini"
 	}
-	return &kubeBuilder{Kubeconfig: kubeconfig, Namespace: namespace,
-		SSHDPort: 2222, // FIXME: Hardcoded also in the eirinifs wrapper to run sshd
+	port := os.Getenv("SSH_PROXY_DAEMON_PORT")
+	if len(port) == 0 {
+		port = "2222"
+	}
+
+	sshdPort, err := strconv.Atoi(port)
+	if err != nil {
+		fmt.Println("Invalid port supplied " + err.Error())
+		panic(err)
+	}
+
+	return &kubeBuilder{
+		Kubeconfig: kubeconfig,
+		Namespace:  namespace,
+		SSHDPort:   sshdPort,
 	}
 }
 
