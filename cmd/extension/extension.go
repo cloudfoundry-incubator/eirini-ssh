@@ -19,8 +19,8 @@ import (
 type Extension struct{ Namespace string }
 
 func generateSecretNameForPod(pod *v1.Pod) (string, error) {
-	guid, ok := pod.GetLabels()["guid"]
-	version, ok := pod.GetLabels()["version"]
+	guid, ok := pod.GetLabels()[eirinix.LabelGUID]
+	version, ok := pod.GetLabels()[eirinix.LabelVersion]
 	if !ok {
 		return "", errors.New("Couldn't get Eirini APP UID")
 	}
