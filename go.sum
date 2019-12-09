@@ -65,6 +65,7 @@ github.com/SUSE/eirinix v0.0.0-20191017094452-d9705e14a1e6 h1:xekFVxUYix1++qx6UT
 github.com/SUSE/eirinix v0.0.0-20191017094452-d9705e14a1e6/go.mod h1:3r0qaThVmB1ZRawphw6KWFsxWLqkASz+WdzzZSMj7QE=
 github.com/SUSE/eirinix v0.2.1-0.20191129111804-f3c0c7ecfdf0 h1:70Zfx0QEaQqNOizdbBFIeaBsiuu5DZZMCo6ivawxIo4=
 github.com/SUSE/eirinix v0.2.1-0.20191129111804-f3c0c7ecfdf0/go.mod h1:3r0qaThVmB1ZRawphw6KWFsxWLqkASz+WdzzZSMj7QE=
+github.com/SUSE/eirinix v0.2.1-0.20191129132942-c654883898f5 h1:32MPD+mkj0/KvrxbeLoZexizJcXu+dolsg+jVlYU43E=
 github.com/SUSE/eirinix v0.2.1-0.20191129132942-c654883898f5/go.mod h1:3r0qaThVmB1ZRawphw6KWFsxWLqkASz+WdzzZSMj7QE=
 github.com/SUSE/eirinix v0.2.1-0.20200131100111-fd343f4e2056/go.mod h1:ypM/imqPjJ+yY0h/v77RlbmG3kDJYnMgBxGRAoEbAJc=
 github.com/SermoDigital/jose v0.0.0-20180104203859-803625baeddc/go.mod h1:ARgCUhI1MHQH+ONky/PAtmVHQrP5JlGY0F3poXOp/fA=

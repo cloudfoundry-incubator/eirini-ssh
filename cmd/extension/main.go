@@ -30,8 +30,18 @@ func startExtension() {
 	}
 	serviceName := os.Getenv("OPERATOR_SERVICE_NAME")
 	webhookNamespace := os.Getenv("OPERATOR_WEBHOOK_NAMESPACE")
+	register := os.Getenv("EIRINI_EXTENSION_REGISTER_ONLY")
+	start := os.Getenv("EIRINI_EXTENSION_START_ONLY")
+	startOnly := start == "true"
+	registerOnly := register == "true"
 
 	fmt.Println("Listening on ", host, port)
+
+	RegisterWebhooks := true
+	if startOnly {
+		fmt.Println("start-only supplied, the extension will start without registering")
+		RegisterWebhooks = false
+	}
 
 	filterEiriniApps := true
 	x := eirinix.NewManager(
@@ -44,10 +54,22 @@ func startExtension() {
 			OperatorFingerprint: "eirini-ssh",
 			ServiceName:         serviceName,
 			WebhookNamespace:    webhookNamespace,
+			RegisterWebHook:     &RegisterWebhooks,
 		})
 
 	x.AddExtension(&Extension{Namespace: ns})
 	x.AddWatcher(&CleanupWatcher{})
+
+	if registerOnly {
+		fmt.Println("Registering the extension")
+		err := x.RegisterExtensions()
+		if err != nil {
+			fmt.Println(err.Error())
+			os.Exit(1)
+		}
+		return
+	}
+
 	var v chan error
 	go func() {
 		fmt.Println("Starting watcher")
