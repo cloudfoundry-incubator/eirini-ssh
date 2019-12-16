@@ -28,6 +28,8 @@ code.cloudfoundry.org/go-loggregator v0.0.0-20190725203007-b8d176783c8a h1:QsW5T
 code.cloudfoundry.org/go-loggregator v0.0.0-20190725203007-b8d176783c8a/go.mod h1:1mwOFhAA8/glYCFDxiqKchLJsNtGScQAkd4zEFxgPwA=
 code.cloudfoundry.org/go-loggregator v7.4.0+incompatible h1:KqZYloMQWM5Zg/BQKunOIA4OODh7djZbk48qqbowNFI=
 code.cloudfoundry.org/go-loggregator v7.4.0+incompatible/go.mod h1:KPBTRqj+y738Nhf1+g4JHFaBU8j7dedirR5ETNHvMXU=
+code.cloudfoundry.org/inigo v0.0.0-20191203191200-e43a1545d242 h1:3ASVGf7H+womVP4WYD4V99uH0wU/nTD0eZVzViDVPJE=
+code.cloudfoundry.org/inigo v0.0.0-20191203191200-e43a1545d242/go.mod h1:1ZB1JCh2FAp+SqX79ve6dc8YREvbsziULEOncAilX4Q=
 code.cloudfoundry.org/lager v2.0.0+incompatible h1:WZwDKDB2PLd/oL+USK4b4aEjUymIej9My2nUQ9oWEwQ=
 code.cloudfoundry.org/lager v2.0.0+incompatible/go.mod h1:O2sS7gKP3HM2iemG+EnwvyNQK7pTSC6Foi4QiMp9sSk=
 code.cloudfoundry.org/locket v0.0.0-20190524173003-285105ed8d9a h1:8Bb5HhOwIAKO7S+USVYWGoUCoW7rZG6dSVkMz/ISmPs=
