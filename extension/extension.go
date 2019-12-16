@@ -1,4 +1,4 @@
-package main
+package extension
 
 import (
 	"code.cloudfoundry.org/diego-ssh/keys"
@@ -16,7 +16,7 @@ import (
 	"strings"
 )
 
-type Extension struct{ Namespace string }
+type SSH struct{ Namespace string }
 
 func generateSecretNameForPod(pod *v1.Pod) (string, error) {
 	guid, ok := pod.GetLabels()[eirinix.LabelGUID]
@@ -56,7 +56,7 @@ func extractInstanceID(s string) string {
 	return "0"
 }
 
-func (ext *Extension) Handle(ctx context.Context, eiriniManager eirinix.Manager, pod *v1.Pod, req admission.Request) admission.Response {
+func (ext *SSH) Handle(ctx context.Context, eiriniManager eirinix.Manager, pod *v1.Pod, req admission.Request) admission.Response {
 
 	if pod == nil {
 		return admission.Errored(http.StatusBadRequest, errors.New("No pod could be decoded from the request"))

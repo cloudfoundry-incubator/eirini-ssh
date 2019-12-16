@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	extension "github.com/SUSE/eirini-ssh/extension"
 	"os"
 	"strconv"
 
@@ -57,8 +58,8 @@ func startExtension() {
 			RegisterWebHook:     &RegisterWebhooks,
 		})
 
-	x.AddExtension(&Extension{Namespace: ns})
-	x.AddWatcher(&CleanupWatcher{})
+	x.AddExtension(&extension.SSH{Namespace: ns})
+	x.AddWatcher(&extension.CleanupWatcher{})
 
 	if registerOnly {
 		fmt.Println("Registering the extension")
