@@ -19,8 +19,8 @@ require (
 	code.cloudfoundry.org/locket v0.0.0-20190524173003-285105ed8d9a
 	code.cloudfoundry.org/rfc5424 v0.0.0-20180905210152-236a6d29298a
 	code.cloudfoundry.org/tlsconfig v0.0.0-20190710180242-462f72de1106
-	github.com/SUSE/eirini-loggregator-bridge v0.0.0-20190930095706-35352eb64347
-	github.com/SUSE/eirinix v0.2.1-0.20191129132942-c654883898f5
+	github.com/SUSE/eirini-loggregator-bridge v0.0.0-20200204072039-d4b932bcb740
+	github.com/SUSE/eirinix v0.2.1-0.20200131100111-fd343f4e2056
 	github.com/apoydence/eachers v0.0.0-20181020210610-23942921fe77 // indirect
 	github.com/appscode/jsonpatch v0.0.0-20190108182946-7c0e3b262f30
 	github.com/armon/go-metrics v0.0.0-20190430140413-ec5e00d3c878
