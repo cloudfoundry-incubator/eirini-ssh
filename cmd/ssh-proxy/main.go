@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"flag"
+	extension "github.com/SUSE/eirini-ssh/extension"
 
 	"code.cloudfoundry.org/clock"
 	"code.cloudfoundry.org/consuladapter"
@@ -116,7 +117,7 @@ func main() {
 func configureProxy(logger lager.Logger, sshProxyConfig config.SSHProxyConfig) (*ssh.ServerConfig, error) {
 
 	var err error
-	permissionsBuilder := NewKubeAuth(os.Getenv("KUBECONFIG"))
+	permissionsBuilder := extension.NewKubeAuth(os.Getenv("KUBECONFIG"))
 
 	authens := []authenticators.PasswordAuthenticator{}
 
