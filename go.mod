@@ -52,7 +52,7 @@ require (
 	github.com/hashicorp/golang-lru v0.5.0
 	github.com/hashicorp/serf v0.8.3
 	github.com/imdario/mergo v0.3.7
-	github.com/json-iterator/go v1.1.6
+	github.com/json-iterator/go v1.1.9
 	github.com/mailru/easyjson v0.0.0-20190626092158-b2ccc519800e // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.1
 	github.com/mitchellh/go-homedir v1.1.0
