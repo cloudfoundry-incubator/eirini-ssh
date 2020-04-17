@@ -68,7 +68,7 @@ require (
 	github.com/prometheus/client_golang v1.0.0
 	github.com/prometheus/client_model v0.0.0-20190812154241-14fe0d1b01d4
 	github.com/prometheus/common v0.6.0
-	github.com/prometheus/procfs v0.0.3
+	github.com/prometheus/procfs v0.0.11
 	github.com/spf13/afero v1.2.2
 	github.com/spf13/pflag v1.0.3
 	github.com/tedsuo/ifrit v0.0.0-20180802180643-bea94bb476cc
