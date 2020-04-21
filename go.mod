@@ -24,7 +24,7 @@ require (
 	github.com/SUSE/eirinix v0.2.1-0.20200420122346-85a6c535b0ad
 	github.com/armon/go-metrics v0.0.0-20190430140413-ec5e00d3c878 // indirect
 	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510 // indirect
-	github.com/hashicorp/consul/api v1.1.0
+	github.com/hashicorp/consul/api v1.4.0
 	github.com/hashicorp/go-immutable-radix v1.1.0 // indirect
 	github.com/hashicorp/go-msgpack v0.5.5 // indirect
 	github.com/hashicorp/go-rootcerts v1.0.1 // indirect
