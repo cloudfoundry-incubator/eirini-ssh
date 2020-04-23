@@ -1,19 +1,25 @@
 ARG BASE_IMAGE=opensuse/leap
+
 FROM golang:1.12 as build
 ARG user="SUSE CFCIBot"
 ARG email=ci-ci-bot@suse.de
+ARG DEBUG_TOOLS=false
+ARG KUBECTL_VERSION=v1.18.2
+ARG KUBECTL_ARCH=linux-amd64
+ARG KUBECTL_CHECKSUM=ed36f49e19d8e0a98add7f10f981feda8e59d32a8cb41a3ac6abdfb2491b3b5b3b6e0b00087525aa8473ed07c0e8a171ad43f311ab041dcc40f72b36fa78af95
 ADD . /eirini-ssh
 WORKDIR /eirini-ssh
 RUN git config --global user.name ${user}
 RUN git config --global user.email ${email}
+RUN if [ "$DEBUG_TOOLS" = "true" ] ; then \
+    wget -O kubectl.tar.gz https://dl.k8s.io/$KUBECTL_VERSION/kubernetes-client-$KUBECTL_ARCH.tar.gz && \
+    echo "$KUBECTL_CHECKSUM kubectl.tar.gz" | sha512sum --check --status && \
+    tar xvf kubectl.tar.gz -C / && \
+    cp -rf /kubernetes/client/bin/kubectl /eirini-ssh/binaries/; fi
 RUN GO111MODULE=on go mod vendor
 RUN bin/build-extension
 RUN bin/build-ssh-proxy
 
-FROM bitnami/kubectl as kubectl
-
 FROM $BASE_IMAGE
-COPY --from=kubectl /opt/bitnami/kubectl/bin/kubectl /bin/kubectl
-COPY --from=build /eirini-ssh/binaries/ssh-extension /bin/eirini-ssh-extension
-COPY --from=build /eirini-ssh/binaries/ssh-proxy /bin/eirini-ssh-proxy
+COPY --from=build /eirini-ssh/binaries/* /bin/
 
