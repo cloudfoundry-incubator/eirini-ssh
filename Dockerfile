@@ -11,14 +11,14 @@ ADD . /eirini-ssh
 WORKDIR /eirini-ssh
 RUN git config --global user.name ${USER}
 RUN git config --global user.email ${EMAIL}
+RUN GO111MODULE=on go mod vendor
+RUN bin/build-extension
+RUN bin/build-ssh-proxy
 RUN if [ "$DEBUG_TOOLS" = "true" ] ; then \
     wget -O kubectl.tar.gz https://dl.k8s.io/$KUBECTL_VERSION/kubernetes-client-$KUBECTL_ARCH.tar.gz && \
     echo "$KUBECTL_CHECKSUM kubectl.tar.gz" | sha512sum --check --status && \
     tar xvf kubectl.tar.gz -C / && \
     cp -f /kubernetes/client/bin/kubectl /eirini-ssh/binaries/; fi
-RUN GO111MODULE=on go mod vendor
-RUN bin/build-extension
-RUN bin/build-ssh-proxy
 
 FROM $BASE_IMAGE
 COPY --from=build /eirini-ssh/binaries/* /bin/
