@@ -7,6 +7,7 @@ import (
 	eirinix "github.com/SUSE/eirinix"
 
 	"github.com/pkg/errors"
+	admissionapi "k8s.io/api/admission/v1beta1"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
@@ -76,54 +77,56 @@ func (ext *SSH) Handle(ctx context.Context, eiriniManager eirinix.Manager, pod *
 	}
 
 	// NOTE: This solution is not HA! Multiple instances will try to create the same secret with unpredictable results.
-	secretName, err := generateSecretNameForPod(pod)
-	if err != nil {
-		return admission.Errored(http.StatusBadRequest, err)
-	}
-	LogInfo("Generating secret", secretName)
-	key, err := keys.RSAKeyPairFactory.NewKeyPair(2048)
-	if err != nil {
-		return admission.Errored(http.StatusBadRequest, errors.Wrap(err, "Failed to generate SSH key for the application"))
-	}
+	if req.AdmissionRequest.Operation == admissionapi.Create {
+		secretName, err := generateSecretNameForPod(pod)
+		if err != nil {
+			return admission.Errored(http.StatusBadRequest, err)
+		}
+		LogInfo("Generating secret", secretName)
+		key, err := keys.RSAKeyPairFactory.NewKeyPair(2048)
+		if err != nil {
+			return admission.Errored(http.StatusBadRequest, errors.Wrap(err, "Failed to generate SSH key for the application"))
+		}
 
-	newSecret := &v1.Secret{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      secretName,
-			Namespace: podCopy.Namespace,
-		},
-		StringData: map[string]string{
-			"public_key":  key.AuthorizedKey(),
-			"private_key": key.PEMEncodedPrivateKey(),
-			"fingerprint": key.Fingerprint(),
-			"pod_name":    pod.Name,
-		},
-	}
-	_, err = kubeClient.CoreV1().Secrets(podCopy.Namespace).Create(newSecret)
-	if err != nil {
-		return admission.Errored(http.StatusBadRequest, errors.Wrap(err, "Failed to create a kube secret for the application SSH key"))
-	}
-
-	for i, c := range podCopy.Spec.Containers {
-		c.Env = append(c.Env,
-			v1.EnvVar{
-				Name: "EIRINI_SSH_KEY",
-				ValueFrom: &v1.EnvVarSource{
-					SecretKeyRef: &v1.SecretKeySelector{
-						LocalObjectReference: v1.LocalObjectReference{Name: secretName},
-						Key:                  "public_key",
-					},
-				},
+		newSecret := &v1.Secret{
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      secretName,
+				Namespace: podCopy.Namespace,
 			},
-			v1.EnvVar{
-				Name: "EIRINI_HOST_KEY",
-				ValueFrom: &v1.EnvVarSource{
-					SecretKeyRef: &v1.SecretKeySelector{
-						LocalObjectReference: v1.LocalObjectReference{Name: secretName},
-						Key:                  "private_key",
+			StringData: map[string]string{
+				"public_key":  key.AuthorizedKey(),
+				"private_key": key.PEMEncodedPrivateKey(),
+				"fingerprint": key.Fingerprint(),
+				"pod_name":    pod.Name,
+			},
+		}
+		_, err = kubeClient.CoreV1().Secrets(podCopy.Namespace).Create(newSecret)
+		if err != nil {
+			return admission.Errored(http.StatusBadRequest, errors.Wrap(err, "Failed to create a kube secret for the application SSH key"))
+		}
+
+		for i, c := range podCopy.Spec.Containers {
+			c.Env = append(c.Env,
+				v1.EnvVar{
+					Name: "EIRINI_SSH_KEY",
+					ValueFrom: &v1.EnvVarSource{
+						SecretKeyRef: &v1.SecretKeySelector{
+							LocalObjectReference: v1.LocalObjectReference{Name: secretName},
+							Key:                  "public_key",
+						},
 					},
 				},
-			})
-		podCopy.Spec.Containers[i] = c
+				v1.EnvVar{
+					Name: "EIRINI_HOST_KEY",
+					ValueFrom: &v1.EnvVarSource{
+						SecretKeyRef: &v1.SecretKeySelector{
+							LocalObjectReference: v1.LocalObjectReference{Name: secretName},
+							Key:                  "private_key",
+						},
+					},
+				})
+			podCopy.Spec.Containers[i] = c
+		}
 	}
 
 	return eiriniManager.PatchFromPod(req, podCopy)
