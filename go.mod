@@ -1,6 +1,6 @@
 module github.com/SUSE/eirini-ssh
 
-go 1.12
+go 1.13
 
 require (
 	code.cloudfoundry.org/bbs v0.0.0-20190724191824-01b96ad15a77 // indirect
