@@ -1,20 +1,22 @@
 package extension
 
 import (
-	"code.cloudfoundry.org/diego-ssh/keys"
 	"context"
-	. "github.com/SUSE/eirini-loggregator-bridge/logger"
-	eirinix "github.com/SUSE/eirinix"
+
+	"code.cloudfoundry.org/diego-ssh/keys"
+	. "code.cloudfoundry.org/eirini-ssh/pkg/logger"
+	eirinix "code.cloudfoundry.org/eirinix"
+
+	"net/http"
+	"strconv"
+	"strings"
 
 	"github.com/pkg/errors"
 	admissionapi "k8s.io/api/admission/v1beta1"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
-	"net/http"
 	"sigs.k8s.io/controller-runtime/pkg/webhook/admission"
-	"strconv"
-	"strings"
 )
 
 type SSH struct{ Namespace string }
@@ -100,7 +102,7 @@ func (ext *SSH) Handle(ctx context.Context, eiriniManager eirinix.Manager, pod *
 				"pod_name":    pod.Name,
 			},
 		}
-		_, err = kubeClient.CoreV1().Secrets(podCopy.Namespace).Create(newSecret)
+		_, err = kubeClient.CoreV1().Secrets(podCopy.Namespace).Create(eiriniManager.GetContext(), newSecret, metav1.CreateOptions{})
 		if err != nil {
 			return admission.Errored(http.StatusBadRequest, errors.Wrap(err, "Failed to create a kube secret for the application SSH key"))
 		}
