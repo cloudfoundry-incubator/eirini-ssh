@@ -3,9 +3,9 @@ package main
 import (
 	"os"
 
-	extension "github.com/SUSE/eirini-ssh/extension"
-	"github.com/SUSE/eirini-ssh/version"
-	eirinix "github.com/SUSE/eirinix"
+	extension "code.cloudfoundry.org/eirini-ssh/extension"
+	"code.cloudfoundry.org/eirini-ssh/version"
+	eirinix "code.cloudfoundry.org/eirinix"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	_ "k8s.io/client-go/plugin/pkg/client/auth/oidc" // from https://github.com/kubernetes/client-go/issues/345

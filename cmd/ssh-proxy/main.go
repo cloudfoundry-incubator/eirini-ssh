@@ -3,7 +3,8 @@ package main
 import (
 	"errors"
 	"flag"
-	extension "github.com/SUSE/eirini-ssh/extension"
+
+	extension "code.cloudfoundry.org/eirini-ssh/extension"
 
 	"code.cloudfoundry.org/clock"
 	"code.cloudfoundry.org/consuladapter"
@@ -20,7 +21,7 @@ import (
 	"code.cloudfoundry.org/lager/lagerflags"
 	"code.cloudfoundry.org/locket"
 
-	//	kb "github.com/SUSE/eirini-ssh/authenticators"
+	//	kb "code.cloudfoundry.org/eirini-ssh/authenticators"
 	"net"
 	"net/url"
 	"os"

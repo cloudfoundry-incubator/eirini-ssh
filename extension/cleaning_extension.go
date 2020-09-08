@@ -3,9 +3,11 @@ package extension
 import (
 	"fmt"
 
-	. "github.com/SUSE/eirini-loggregator-bridge/logger"
-	eirinix "github.com/SUSE/eirinix"
+	. "code.cloudfoundry.org/eirini-ssh/pkg/logger"
+	eirinix "code.cloudfoundry.org/eirinix"
 	corev1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
 	"k8s.io/apimachinery/pkg/watch"
 	typedv1 "k8s.io/client-go/kubernetes/typed/core/v1"
 	// "k8s.io/client-go/kubernetes"
@@ -47,7 +49,7 @@ func (pw *CleanupWatcher) Handle(manager eirinix.Manager, e watch.Event) {
 		}
 
 		// https://godoc.org/k8s.io/apimachinery/pkg/apis/meta/v1#DeleteOptions
-		err = kubeClient.Secrets(pod.Namespace).Delete(secretName, nil)
+		err = kubeClient.Secrets(pod.Namespace).Delete(manager.GetContext(), secretName, metav1.DeleteOptions{})
 		if err != nil {
 			LogError(err.Error())
 		}
