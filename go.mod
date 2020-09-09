@@ -40,7 +40,7 @@ require (
 	github.com/spf13/viper v1.6.3
 	github.com/tedsuo/ifrit v0.0.0-20180802180643-bea94bb476cc
 	github.com/vito/go-sse v1.0.0 // indirect
-	go.uber.org/zap v1.15.0
+	go.uber.org/zap v1.16.0
 	golang.org/x/crypto v0.0.0-20200220183623-bac4c82f6975
 	google.golang.org/appengine v1.6.1 // indirect
 	k8s.io/api v0.18.6
