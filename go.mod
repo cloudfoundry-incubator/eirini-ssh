@@ -41,10 +41,10 @@ require (
 	github.com/tedsuo/ifrit v0.0.0-20180802180643-bea94bb476cc
 	github.com/vito/go-sse v1.0.0 // indirect
 	go.uber.org/zap v1.15.0
-	golang.org/x/crypto v0.0.0-20200220183623-bac4c82f6975
+	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
 	google.golang.org/appengine v1.6.1 // indirect
-	k8s.io/api v0.18.6
-	k8s.io/apimachinery v0.18.6
+	k8s.io/api v0.21.0
+	k8s.io/apimachinery v0.21.0
 	k8s.io/client-go v0.18.6
 	sigs.k8s.io/controller-runtime v0.6.2
 )
