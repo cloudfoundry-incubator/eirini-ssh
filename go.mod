@@ -37,12 +37,11 @@ require (
 	github.com/pkg/sftp v1.11.0 // indirect
 	github.com/prometheus/common v0.6.0 // indirect
 	github.com/spf13/cobra v0.0.7
-	github.com/spf13/viper v1.6.3
+	github.com/spf13/viper v1.8.1
 	github.com/tedsuo/ifrit v0.0.0-20180802180643-bea94bb476cc
 	github.com/vito/go-sse v1.0.0 // indirect
-	go.uber.org/zap v1.15.0
-	golang.org/x/crypto v0.0.0-20200220183623-bac4c82f6975
-	google.golang.org/appengine v1.6.1 // indirect
+	go.uber.org/zap v1.17.0
+	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
 	k8s.io/api v0.18.6
 	k8s.io/apimachinery v0.18.6
 	k8s.io/client-go v0.18.6
